@@ -1,11 +1,3 @@
-export portfolio_volatility,
-       herfindahl,
-       modified_herfindahl,
-       marginal_risk_contribution,
-       risk_contribution,
-       risk_contribution_ratio,
-       diversification_ratio
-
 function herfindahl(w)
     sum(x^2 for x in w)
 end

@@ -1,7 +1,7 @@
 name = "PortfolioOptimization"
 uuid = "533b8257-2919-444f-8969-1524e8d0cc7c"
 authors = ["Sebastian Rollen <sebastian.rollen@betterment.com>"]
-version = "1.0.0"
+version = "1.1.0"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"

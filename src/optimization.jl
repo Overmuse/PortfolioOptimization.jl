@@ -1,12 +1,3 @@
-export GlobalMinimumVariance,
-       MinimumVariance,
-       EqualRiskContribution,
-       EqualWeight,
-       MostDiversified,
-       RiskParity,
-       RichardRancolli,
-       optimize
-
 abstract type AbstractPortfolioOptimizationTarget end
 struct GlobalMinimumVariance <: AbstractPortfolioOptimizationTarget end
 struct MinimumVariance <: AbstractPortfolioOptimizationTarget
@@ -71,4 +62,41 @@ end
 
 function optimize(x::RichardRancolli, Σ)
     ccd(Σ, x.gmv, x.mdp, x.h, x.erc)
+end
+
+function discrete_allocation(target_weights, prices, cash)
+    cash_remaining = cash
+    shares_bought = zeros(Int, length(target_weights))
+    for idx in sortperm(target_weights, rev = true)
+        price = prices[idx]
+        shares = target_weights[idx] * cash ÷ price
+        cost = shares * price
+        if cost > cash_remaining
+            shares = cash_remaining ÷ price
+        end
+        cash_remaining -= cost
+        shares_bought[idx] = shares
+    end
+    while cash_remaining > 0
+        current_weights = prices .* shares_bought / (prices' * shares_bought)
+        deficit = target_weights .- current_weights
+        idx = argmax(deficit)
+        weight = target_weights[idx]
+        price = prices[idx]
+        while price > cash_remaining
+            deficit[idx] = 0
+            idx = argmax(deficit)
+            if deficit[idx] <= 0
+                break
+            end
+            weight = target_weights[idx]
+            price = prices[idx]
+        end
+        if deficit[idx] <= 0
+            break
+        end
+        shares_bought[idx] += 1
+        cash_remaining -= price
+    end
+    return shares_bought, cash_remaining
 end
